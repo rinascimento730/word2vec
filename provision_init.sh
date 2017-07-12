@@ -58,7 +58,7 @@ fi
 sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/mecab.sh
 #!/bin/bash
 
-export PATH="$PATH:/usr/local/mecab/bin
+export PATH="$PATH:/usr/local/mecab/bin"
 __END_OF_MESSAGE__
 
 
