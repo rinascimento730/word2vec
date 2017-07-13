@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # set install version
-PYTHON2="2.7.13"
-PYTHON3="3.3.6"
+PYTHON2="2.7"
+PYTHON3="3.3"
 PYTHON2_FULL="2.7.13"
 PYTHON3_FULL="3.3.6"
-ENSY_INSTALL="0.7.3"
+EASY_INSTALL="0.6.49"
 MECAB="0.996"
 IPADIC="2.7.0-20070801"
 
@@ -48,18 +48,18 @@ then
 fi
 
 # install Easy_install
-if [ ! -e /usr/local/src/distribute-${ENSY_INSTALL} ]
+if [ ! -e /usr/local/src/distribute-${EASY_INSTALL} ]
 then
     # install Easy_install
     cd /usr/local/src
-    curl -O https://pypi.python.org/packages/source/d/distribute/distribute-${ENSY_INSTALL}.tar.gz
-    tar xzf distribute-${ENSY_INSTALL}.tar.gz
-    cd distribute-${ENSY_INSTALL}
+    curl -O https://pypi.python.org/packages/source/d/distribute/distribute-${EASY_INSTALL}.tar.gz
+    tar xzf distribute-${EASY_INSTALL}.tar.gz
+    cd distribute-${EASY_INSTALL}
     /opt/local/bin/python${PYTHON2} ./distribute_setup.py
     /opt/local/bin/python${PYTHON3} ./distribute_setup.py
 fi
 
-<< COMMENTOUT
+
 # install pip2
 if [ ! -e /opt/local/bin/pip${PYTHON2} ]
 then
@@ -79,6 +79,14 @@ then
     #install virtualenv
     /opt/local/bin/${PYTHON3} install virtualenv
 fi
+
+# enable python
+sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/python.sh
+#!/bin/bash
+
+export PATH="$PATH:/opt/local/bin"
+__END_OF_MESSAGE__
+source /etc/profile.d/python.sh
 
 # install word2vec
 if [ ! -d /vagrant/word2vec ]
@@ -111,7 +119,8 @@ then
     sudo make
     sudo make install
 
-    pip install mecab-python
+    pip{PYTHON2} install --user mecab-python
+    pip{PYTHON3} install --user mecab-python3
 fi
 
 # enable mecab
@@ -121,6 +130,4 @@ sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/mecab.sh
 export PATH="$PATH:/usr/local/mecab/bin"
 __END_OF_MESSAGE__
 source /etc/profile.d/mecab.sh
-COMMENTOUT
-
 
