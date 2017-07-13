@@ -119,8 +119,8 @@ then
     sudo make
     sudo make install
 
-    pip{PYTHON2} install --user mecab-python
-    pip{PYTHON3} install --user mecab-python3
+    pip${PYTHON2} install --user mecab-python
+    pip${PYTHON3} install --user mecab-python3
 fi
 
 # enable mecab
