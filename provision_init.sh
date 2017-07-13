@@ -110,9 +110,6 @@ then
     sudo ./configure --prefix=/usr/local/mecab --with-mecab-config=/usr/local/mecab/bin/mecab-config --with-charset=utf8
     sudo make
     sudo make install
-
-    pip${PYTHON2} install --user mecab-python
-    pip${PYTHON3} install --user mecab-python3
 fi
 
 # enable mecab
@@ -121,5 +118,9 @@ sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/mecab.sh
 
 export PATH="$PATH:/usr/local/mecab/bin"
 __END_OF_MESSAGE__
-source /etc/profile.d/mecab.sh
+export PATH="$PATH:/usr/local/mecab/bin"
+
+# install mecab-python
+pip${PYTHON2} install --user mecab-python
+pip${PYTHON3} install --user mecab-python3
 
