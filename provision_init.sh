@@ -5,7 +5,6 @@ PYTHON2="2.7"
 PYTHON3="3.3"
 PYTHON2_FULL="2.7.13"
 PYTHON3_FULL="3.3.6"
-EASY_INSTALL="0.6.49"
 MECAB="0.996"
 IPADIC="2.7.0-20070801"
 
@@ -29,8 +28,8 @@ then
 
     # install python 2.7.13
     cd Python-${PYTHON2_FULL}
-    ./configure --prefix=/opt/local
-    make && make altinstall
+    sudo ./configure --prefix=/opt/local
+    sudo make && sudo make altinstall
 fi
 
 # install python3
@@ -43,22 +42,9 @@ then
 
     # install python3
     cd Python-${PYTHON3_FULL}
-    ./configure --prefix=/opt/local
-    make && make altinstall
+    sudo ./configure --prefix=/opt/local
+    sudo make && sudo make altinstall
 fi
-
-# install Easy_install
-if [ ! -e /usr/local/src/distribute-${EASY_INSTALL} ]
-then
-    # install Easy_install
-    cd /usr/local/src
-    curl -O https://pypi.python.org/packages/source/d/distribute/distribute-${EASY_INSTALL}.tar.gz
-    tar xzf distribute-${EASY_INSTALL}.tar.gz
-    cd distribute-${EASY_INSTALL}
-    /opt/local/bin/python${PYTHON2} ./distribute_setup.py
-    /opt/local/bin/python${PYTHON3} ./distribute_setup.py
-fi
-
 
 # install pip2
 if [ ! -e /opt/local/bin/pip${PYTHON2} ]
@@ -67,7 +53,10 @@ then
     curl -kL https://bootstrap.pypa.io/get-pip.py | /opt/local/bin/python${PYTHON2}
 
     #install virtualenv
-    /opt/local/bin/${PYTHON2} install virtualenv
+    sudo /opt/local/bin/pip${PYTHON2} install virtualenv
+
+    # install distribute
+    pip${PYTHON2} install --user distribute
 fi
 
 # install pip3
@@ -77,7 +66,10 @@ then
     curl -kL https://bootstrap.pypa.io/get-pip.py | /opt/local/bin/python${PYTHON3}
 
     #install virtualenv
-    /opt/local/bin/${PYTHON3} install virtualenv
+    sudo /opt/local/bin/pip${PYTHON3} install virtualenv
+
+    # install distribute
+    pip${PYTHON3} install --user distribute
 fi
 
 # enable python
