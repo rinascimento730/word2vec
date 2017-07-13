@@ -56,7 +56,7 @@ then
     sudo /opt/local/bin/pip${PYTHON2} install virtualenv
 
     # install distribute
-    pip${PYTHON2} install --user distribute
+    pip${PYTHON2} install -U setuptools --user
 fi
 
 # install pip3
@@ -68,8 +68,8 @@ then
     #install virtualenv
     sudo /opt/local/bin/pip${PYTHON3} install virtualenv
 
-    # install distribute
-    pip${PYTHON3} install --user distribute
+    # install setuptools
+    pip${PYTHON3} install -U setuptools --user
 fi
 
 # enable python
