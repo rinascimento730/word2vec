@@ -8,6 +8,13 @@ PYTHON3_FULL="3.3.6"
 MECAB="0.996"
 IPADIC="2.7.0-20070801"
 
+#set PATH
+SRC_TO="/usr/local/src"
+PYTHON_AT="/opt/local"
+PIP_AT=${HOME}"/.local"
+MECAB_AT="/usr/local/mecab"
+
+
 # yum upgrade
 sudo yum -y upgrade
 
@@ -19,108 +26,128 @@ sudo yum -y groupinstall "Development tools"
 sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
 
 # install python 2
-if [ ! -e /opt/local/bin/python${PYTHON2} ]
+if [ ! -e ${PYTHON_AT}/bin/python${PYTHON2} ]
 then
     # get python 2
-    cd /usr/local/src
-    curl -O https://www.python.org/ftp/python/${PYTHON2_FULL}/Python-${PYTHON2_FULL}.tgz
-    tar zxf Python-${PYTHON2_FULL}.tgz
+    cd ${SRC_TO}
+    sudo curl -O https://www.python.org/ftp/python/${PYTHON2_FULL}/Python-${PYTHON2_FULL}.tgz
+    sudo tar zxf Python-${PYTHON2_FULL}.tgz
 
     # install python 2.7.13
     cd Python-${PYTHON2_FULL}
-    sudo ./configure --prefix=/opt/local
+    sudo ./configure --prefix=${PYTHON_AT}
     sudo make && sudo make altinstall
 fi
 
 # install python3
-if [ ! -e /opt/local/bin/python${PYTHON3} ]
+if [ ! -e ${PYTHON_AT}/bin/python${PYTHON3} ]
 then
     # get python3
-    cd /usr/local/src
-    curl -O https://www.python.org/ftp/python/${PYTHON3_FULL}/Python-${PYTHON3_FULL}.tgz
-    tar zxf Python-${PYTHON3_FULL}.tgz
+    cd ${SRC_TO}
+    sudo curl -O https://www.python.org/ftp/python/${PYTHON3_FULL}/Python-${PYTHON3_FULL}.tgz
+    sudo tar zxf Python-${PYTHON3_FULL}.tgz
 
     # install python3
     cd Python-${PYTHON3_FULL}
-    sudo ./configure --prefix=/opt/local
+    sudo ./configure --prefix=${PYTHON_AT}
     sudo make && sudo make altinstall
 fi
 
-# install pip2
-if [ ! -e /opt/local/bin/pip${PYTHON2} ]
+# enable python
+if [ ! `echo  $PATH | grep ${PYTHON_AT}'/bin'` ]
 then
+  echo 'export PATH=$PATH:'${PYTHON_AT}'/bin' >> ~/.bash_profile
+  source ~/.bash_profile
+fi
+
+# install pip2
+if [ ! -e ${PIP_AT}/bin/pip${PYTHON2} ]
+then
+	cd ${SRC_TO}
     # install pip
-    curl -kL https://bootstrap.pypa.io/get-pip.py | /opt/local/bin/python${PYTHON2}
+    sudo curl -O https://bootstrap.pypa.io/get-pip.py
+    ${PYTHON_AT}/bin/python${PYTHON2} get-pip.py --user
 
     #install virtualenv
-    sudo /opt/local/bin/pip${PYTHON2} install virtualenv
+    ${PIP_AT}/pip${PYTHON2} install --user virtualenv
 
     # install distribute
-    pip${PYTHON2} install -U setuptools --user
+    ${PIP_AT}/bin/bin/pip${PYTHON2} install -U setuptools --user
 fi
 
 # install pip3
-if [ ! -e /opt/local/bin/pip${PYTHON3} ]
+if [ ! -e ${PIP_AT}/bin/pip${PYTHON3} ]
 then
+	cd ${SRC_TO}
     # install pip
-    curl -kL https://bootstrap.pypa.io/get-pip.py | /opt/local/bin/python${PYTHON3}
+    sudo curl -O https://bootstrap.pypa.io/get-pip.py
+    ${PYTHON_AT}/bin/python${PYTHON3} get-pip.py --user
 
     #install virtualenv
-    sudo /opt/local/bin/pip${PYTHON3} install virtualenv
+    ${PIP_AT}/bin/pip${PYTHON3} install --user virtualenv
 
-    # install setuptools
-    pip${PYTHON3} install -U setuptools --user
+    # install distribute
+    ${PIP_AT}/bin/pip${PYTHON3} install -U setuptools --user
 fi
 
-# enable python
-sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/python.sh
-#!/bin/bash
-
-export PATH='$PATH:/opt/local/bin'
-__END_OF_MESSAGE__
-source /etc/profile.d/python.sh
+# enable pip
+if [ ! `echo  $PATH | grep ${PIP_AT}'/bin'` ]
+then
+  echo 'export PATH=$PATH:'${PIP_AT}'/bin' >> ~/.bash_profile
+  source ~/.bash_profile
+fi
 
 # install word2vec
-if [ ! -d /vagrant/word2vec ]
+if [ ! -e /vagrant/word2vec ]
 then
     cd /vagrant
     git clone https://github.com/svn2github/word2vec.git
     cd word2vec
-    make
+    sudo make
 fi
 
 # install MeCab
-if [ ! -d /usr/local/mecab ]
+if [ ! -e ${MECAB_AT} ]
 then
+    # install gcc-c++
 	sudo yum -y install gcc-c++
 
+    # install mecab
     sudo mkdir /usr/local/mecab
-    cd /usr/local/src
-    wget -O mecab-${MECAB}.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
-    tar xvfz mecab-${MECAB}.tar.gz
+    cd ${SRC_TO}
+    sudo wget -O mecab-${MECAB}.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
+    sudo tar xvfz mecab-${MECAB}.tar.gz
     cd mecab-${MECAB}
-    sudo ./configure --enable-utf8-only --prefix=/usr/local/mecab
+    sudo ./configure --enable-utf8-only --prefix=${MECAB_AT}
     sudo make
     sudo make install
 
-    cd /usr/local/src
-    wget -O mecab-ipadic-${IPADIC}.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
-    tar xvfz mecab-ipadic-${IPADIC}.tar.gz
+    # install ipadic
+    cd ${SRC_TO}
+    sudo wget -O mecab-ipadic-${IPADIC}.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7MWVlSDBCSXZMTXM"
+    sudo tar xvfz mecab-ipadic-${IPADIC}.tar.gz
     cd mecab-ipadic-${IPADIC}
-    sudo ./configure --prefix=/usr/local/mecab --with-mecab-config=/usr/local/mecab/bin/mecab-config --with-charset=utf8
+    sudo ./configure --prefix=${MECAB_AT} --with-mecab-config=${MECAB_AT}/bin/mecab-config --with-charset=utf8
     sudo make
     sudo make install
 fi
 
-# enable mecab
-sudo cat <<__END_OF_MESSAGE__ > /etc/profile.d/mecab.sh
-#!/bin/bash
+# enable libmecab
+if [ ! `cat /etc/ld.so.conf | grep ${MECAB_AT}'/lib'` ]
+then
+  sudo chmod 777 /etc/ld.so.conf
+  echo ${MECAB_AT}'/lib' >> /etc/ld.so.conf
+  sudo chmod 644 /etc/ld.so.conf
+  sudo ldconfig
+fi
 
-export PATH='$PATH:/usr/local/mecab/bin'
-__END_OF_MESSAGE__
-export PATH="$PATH:/usr/local/mecab/bin"
+# enable mecab
+if [ ! `echo  $PATH | grep ${MECAB_AT}'/bin'` ]
+then
+  echo 'export PATH=$PATH:'${MECAB_AT}'/bin' >> ~/.bash_profile
+  source ~/.bash_profile
+fi
 
 # install mecab-python
-pip${PYTHON2} install --user mecab-python
-pip${PYTHON3} install --user mecab-python3
-
+${PIP_AT}/bin/pip${PYTHON2} install --user mecab-python
+${PIP_AT}/bin/pip${PYTHON3} install --user mecab-python3
