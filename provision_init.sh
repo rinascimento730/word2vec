@@ -151,3 +151,36 @@ fi
 # install mecab-python
 ${PIP_AT}/bin/pip${PYTHON2} install --user mecab-python
 ${PIP_AT}/bin/pip${PYTHON3} install --user mecab-python3
+
+# install beautifulsoup
+${PIP_AT}/bin/pip${PYTHON2} install --user beautifulsoup4
+${PIP_AT}/bin/pip${PYTHON3} install --user beautifulsoup4
+
+# install ruby & wp2txt
+if [ ! -e ~/.rbenv ]
+then
+    # install rbenv
+    git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+    echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+    source ~/.bash_profile
+
+    # install ruby-build
+    git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
+    cd ~/.rbenv/plugins/ruby-build
+    sudo ./install.sh
+
+    # install ruby
+    rbenv install 2.3.1
+    rbenv rehash
+    rbenv global 2.3.1
+
+    # instal wp2txt
+    gem install wp2txt
+fi
+
+# add +x to sh file
+find /vagrant/load -type f -print | xargs chmod 755
+
+
+
