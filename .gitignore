@@ -1,4 +1,4 @@
 .vagrant/*
 wikipedia/*
-corpus/facebook-wakati.txt
+corpus/*
 app/resource/facebook/*
