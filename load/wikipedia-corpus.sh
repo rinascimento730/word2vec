@@ -9,7 +9,7 @@ then
 fi
 
 # get wikipedia data
-if [ ! -e ${BASE}/wikipedia ]
+if [ ! -e ${BASE}/wikipedia/jawiki-latest-pages-articles.xml.bz2 ]
 then
     mkdir ${BASE}/wikipedia
     cd ${BASE}/wikipedia
