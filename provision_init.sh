@@ -2,9 +2,9 @@
 
 # set install version
 PYTHON2="2.7"
-PYTHON3="3.3"
+PYTHON3="3.6"
 PYTHON2_FULL="2.7.13"
-PYTHON3_FULL="3.3.6"
+PYTHON3_FULL="3.6.2"
 MECAB="0.996"
 IPADIC="2.7.0-20070801"
 
@@ -23,7 +23,7 @@ sudo yum -y install git
 
 # install dev tools
 sudo yum -y groupinstall "Development tools"
-sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
+sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel boost-devel
 
 # install python 2
 if [ ! -e ${PYTHON_AT}/bin/python${PYTHON2} ]
@@ -156,6 +156,18 @@ ${PIP_AT}/bin/pip${PYTHON3} install --user mecab-python3
 ${PIP_AT}/bin/pip${PYTHON2} install --user beautifulsoup4
 ${PIP_AT}/bin/pip${PYTHON3} install --user beautifulsoup4
 
+# install scikit-learn
+${PIP_AT}/bin/pip${PYTHON2} install --user scikit-learn
+${PIP_AT}/bin/pip${PYTHON3} install --user scikit-learn
+
+# install matplotlib
+${PIP_AT}/bin/pip${PYTHON2} install --user matplotlib
+${PIP_AT}/bin/pip${PYTHON3} install --user matplotlib
+
+# install scipy
+${PIP_AT}/bin/pip${PYTHON2} install --user scipy
+${PIP_AT}/bin/pip${PYTHON3} install --user scipy
+
 # install ruby & wp2txt
 if [ ! -e ~/.rbenv ]
 then
@@ -181,6 +193,3 @@ fi
 
 # add +x to sh file
 find /vagrant/load -type f -print | xargs chmod 755
-
-
-
