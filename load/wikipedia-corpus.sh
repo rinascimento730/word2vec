@@ -46,7 +46,7 @@ fi
 # exec word2vec
 if [ ! -e ${BASE}/word2vec/jawiki.bin ]
 then
-	time ${BASE}/word2vec/word2vec -train ${BASE}/corpus/jawiki-wakati.txt -output ${BASE}/word2vec/jawiki.bin -thread 5 -size 200 -window 5 -negative 5 -hs 0 -sample 1e-3 -binary 1
+	time ${BASE}/word2vec/word2vec -train ${BASE}/corpus/jawiki-wakati.txt -output ${BASE}/word2vec/jawiki.bin -cbow 5 -threads 20 -size 200 -window 5 -negative 5 -hs 0 -sample 1e-4 -binary 1 -iter 15
 else
 	echo "Nothing to do. in exec word2vec"
 fi

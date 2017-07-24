@@ -168,6 +168,18 @@ ${PIP_AT}/bin/pip${PYTHON3} install --user matplotlib
 ${PIP_AT}/bin/pip${PYTHON2} install --user scipy
 ${PIP_AT}/bin/pip${PYTHON3} install --user scipy
 
+# install sphinx
+${PIP_AT}/bin/pip${PYTHON2} install --user sphinx
+${PIP_AT}/bin/pip${PYTHON3} install --user sphinx
+
+# install pydot
+${PIP_AT}/bin/pip${PYTHON2} install --user pydot
+${PIP_AT}/bin/pip${PYTHON3} install --user pydot
+
+# install gensim
+${PIP_AT}/bin/pip${PYTHON2} install --user --upgrade gensim
+${PIP_AT}/bin/pip${PYTHON3} install --user --upgrade gensim
+
 # install ruby & wp2txt
 if [ ! -e ~/.rbenv ]
 then
