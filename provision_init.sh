@@ -11,7 +11,8 @@ IPADIC="2.7.0-20070801"
 #set PATH
 SRC_TO="/usr/local/src"
 PYTHON_AT="/opt/local"
-PIP_AT=${HOME}"/.local"
+PIP2_AT=${HOME}"/.local"
+PIP3_AT="/opt/local"
 MECAB_AT="/usr/local/mecab"
 
 
@@ -61,7 +62,7 @@ then
 fi
 
 # install pip2
-if [ ! -e ${PIP_AT}/bin/pip${PYTHON2} ]
+if [ ! -e ${PIP2_AT}/bin/pip${PYTHON2} ]
 then
 	cd ${SRC_TO}
     # install pip
@@ -69,14 +70,14 @@ then
     ${PYTHON_AT}/bin/python${PYTHON2} get-pip.py --user
 
     #install virtualenv
-    ${PIP_AT}/pip${PYTHON2} install --user virtualenv
+    ${PIP2_AT}/pip${PYTHON2} install --user virtualenv
 
     # install distribute
-    ${PIP_AT}/bin/bin/pip${PYTHON2} install -U setuptools --user
+    ${PIP2_AT}/bin/bin/pip${PYTHON2} install -U setuptools --user
 fi
 
 # install pip3
-if [ ! -e ${PIP_AT}/bin/pip${PYTHON3} ]
+if [ ! -e ${PIP3_AT}/bin/pip${PYTHON3} ]
 then
 	cd ${SRC_TO}
     # install pip
@@ -84,21 +85,21 @@ then
     ${PYTHON_AT}/bin/python${PYTHON3} get-pip.py --user
 
     #install virtualenv
-    ${PIP_AT}/bin/pip${PYTHON3} install --user virtualenv
+    ${PIP3_AT}/bin/pip${PYTHON3} install --user virtualenv
 
     # install distribute
-    ${PIP_AT}/bin/pip${PYTHON3} install -U setuptools --user
+    ${PIP3_AT}/bin/pip${PYTHON3} install -U setuptools --user
 fi
 
 # enable pip
-if [ ! `echo  $PATH | grep ${PIP_AT}'/bin'` ]
+if [ ! `echo  $PATH | grep ${PIP2_AT}'/bin'` ]
 then
-  echo 'export PATH=$PATH:'${PIP_AT}'/bin' >> ~/.bash_profile
+  echo 'export PATH=$PATH:'${PIP2_AT}'/bin' >> ~/.bash_profile
   source ~/.bash_profile
 fi
 
 # install word2vec
-if [ ! -e /vagrant/word2vec ]
+if [ ! -e /vagrant/word2vec ] && [ -f /vagrant/Vagrantfile ]
 then
     cd /vagrant
     git clone https://github.com/svn2github/word2vec.git
@@ -149,36 +150,36 @@ then
 fi
 
 # install mecab-python
-${PIP_AT}/bin/pip${PYTHON2} install --user mecab-python
-${PIP_AT}/bin/pip${PYTHON3} install --user mecab-python3
+${PIP2_AT}/bin/pip${PYTHON2} install --user mecab-python
+${PIP3_AT}/bin/pip${PYTHON3} install --user mecab-python3
 
 # install beautifulsoup
-${PIP_AT}/bin/pip${PYTHON2} install --user beautifulsoup4
-${PIP_AT}/bin/pip${PYTHON3} install --user beautifulsoup4
+${PIP2_AT}/bin/pip${PYTHON2} install --user beautifulsoup4
+${PIP3_AT}/bin/pip${PYTHON3} install --user beautifulsoup4
 
 # install scikit-learn
-${PIP_AT}/bin/pip${PYTHON2} install --user scikit-learn
-${PIP_AT}/bin/pip${PYTHON3} install --user scikit-learn
+${PIP2_AT}/bin/pip${PYTHON2} install --user scikit-learn
+${PIP3_AT}/bin/pip${PYTHON3} install --user scikit-learn
 
 # install matplotlib
-${PIP_AT}/bin/pip${PYTHON2} install --user matplotlib
-${PIP_AT}/bin/pip${PYTHON3} install --user matplotlib
+${PIP2_AT}/bin/pip${PYTHON2} install --user matplotlib
+${PIP3_AT}/bin/pip${PYTHON3} install --user matplotlib
 
 # install scipy
-${PIP_AT}/bin/pip${PYTHON2} install --user scipy
-${PIP_AT}/bin/pip${PYTHON3} install --user scipy
+${PIP2_AT}/bin/pip${PYTHON2} install --user scipy
+${PIP3_AT}/bin/pip${PYTHON3} install --user scipy
 
 # install sphinx
-${PIP_AT}/bin/pip${PYTHON2} install --user sphinx
-${PIP_AT}/bin/pip${PYTHON3} install --user sphinx
+${PIP2_AT}/bin/pip${PYTHON2} install --user sphinx
+${PIP3_AT}/bin/pip${PYTHON3} install --user sphinx
 
 # install pydot
-${PIP_AT}/bin/pip${PYTHON2} install --user pydot
-${PIP_AT}/bin/pip${PYTHON3} install --user pydot
+${PIP2_AT}/bin/pip${PYTHON2} install --user pydot
+${PIP3_AT}/bin/pip${PYTHON3} install --user pydot
 
 # install gensim
-${PIP_AT}/bin/pip${PYTHON2} install --user --upgrade gensim
-${PIP_AT}/bin/pip${PYTHON3} install --user --upgrade gensim
+${PIP2_AT}/bin/pip${PYTHON2} install --user --upgrade gensim
+${PIP3_AT}/bin/pip${PYTHON3} install --user --upgrade gensim
 
 # install ruby & wp2txt
 if [ ! -e ~/.rbenv ]
@@ -204,4 +205,7 @@ then
 fi
 
 # add +x to sh file
-find /vagrant/load -type f -print | xargs chmod 755
+if [ ! -e /vagrant/load ] && [ -f /vagrant/Vagrantfile ]
+then
+    find /vagrant/load -type f -print | xargs chmod 755
+fi
