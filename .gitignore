@@ -1,4 +1,5 @@
 .vagrant/*
 wikipedia/*
 corpus/*
+sandbox/*
 app/resource/facebook/*
