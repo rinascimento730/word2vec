@@ -11,9 +11,9 @@ IPADIC="2.7.0-20070801"
 #set PATH
 SRC_TO="/usr/local/src"
 PYTHON_AT="/opt/local"
-PIP2_AT=${HOME}"/.local"
-PIP3_AT="/opt/local"
-MECAB_AT="/usr/local/mecab"
+PIP_AT="/opt/local"
+MECAB_AT="/opt/local"
+JUMAN_AT="/opt/local"
 
 
 # yum upgrade
@@ -24,7 +24,22 @@ sudo yum -y install git
 
 # install dev tools
 sudo yum -y groupinstall "Development tools"
-sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel boost-devel
+sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel scl-utils
+
+# install boost-devel
+sudo yum -y install http://repo.enetres.net/x86_64/boost-devel-1.59.0-1.x86_64.rpm
+
+# add Devtoolset-3 Repo
+if [ ! -e /etc/yum.repos.d/rhscl-devtoolset-3-epel-6.repo ]
+then
+    cd  /etc/yum.repos.d/
+    sudo wget --no-check-certificate https://copr-fe.cloud.fedoraproject.org/coprs/rhscl/devtoolset-3/repo/epel-6/rhscl-devtoolset-3-epel-6.repo
+    sudo yum -y install devtoolset-3-gcc devtoolset-3-binutils
+    sudo yum -y install devtoolset-3-gcc-c++ devtoolset-3-gcc-gfortran
+
+    #scl enable devtoolset-3 bash
+    echo 'source /opt/rh/devtoolset-3/enable' >> ~/.bash_profile
+fi
 
 # install python 2
 if [ ! -e ${PYTHON_AT}/bin/python${PYTHON2} ]
@@ -62,40 +77,33 @@ then
 fi
 
 # install pip2
-if [ ! -e ${PIP2_AT}/bin/pip${PYTHON2} ]
+if [ ! -e ${PIP_AT}/bin/pip${PYTHON2} ]
 then
 	cd ${SRC_TO}
     # install pip
     sudo curl -O https://bootstrap.pypa.io/get-pip.py
-    ${PYTHON_AT}/bin/python${PYTHON2} get-pip.py --user
+    sudo ${PYTHON_AT}/bin/python${PYTHON2} get-pip.py
 
     #install virtualenv
-    ${PIP2_AT}/pip${PYTHON2} install --user virtualenv
+    sudo ${PIP_AT}/bin/pip${PYTHON2} install virtualenv
 
     # install distribute
-    ${PIP2_AT}/bin/bin/pip${PYTHON2} install -U setuptools --user
+    sudo ${PIP_AT}/bin/pip${PYTHON2} install -U setuptools
 fi
 
 # install pip3
-if [ ! -e ${PIP3_AT}/bin/pip${PYTHON3} ]
+if [ ! -e ${PIP_AT}/bin/pip${PYTHON3} ]
 then
 	cd ${SRC_TO}
     # install pip
     sudo curl -O https://bootstrap.pypa.io/get-pip.py
-    ${PYTHON_AT}/bin/python${PYTHON3} get-pip.py --user
+    sudo ${PYTHON_AT}/bin/python${PYTHON3} get-pip.py
 
     #install virtualenv
-    ${PIP3_AT}/bin/pip${PYTHON3} install --user virtualenv
+    sudo ${PIP_AT}/bin/pip${PYTHON3} install virtualenv
 
     # install distribute
-    ${PIP3_AT}/bin/pip${PYTHON3} install -U setuptools --user
-fi
-
-# enable pip
-if [ ! `echo  $PATH | grep ${PIP2_AT}'/bin'` ]
-then
-  echo 'export PATH=$PATH:'${PIP2_AT}'/bin' >> ~/.bash_profile
-  source ~/.bash_profile
+    sudo ${PIP_AT}/bin/pip${PYTHON3} install -U setuptools
 fi
 
 # install word2vec
@@ -108,13 +116,12 @@ then
 fi
 
 # install MeCab
-if [ ! -e ${MECAB_AT} ]
+if [ ! -e ${MECAB_AT}/bin/mecab ]
 then
     # install gcc-c++
 	sudo yum -y install gcc-c++
 
     # install mecab
-    sudo mkdir /usr/local/mecab
     cd ${SRC_TO}
     sudo wget -O mecab-${MECAB}.tar.gz "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE"
     sudo tar xvfz mecab-${MECAB}.tar.gz
@@ -133,53 +140,84 @@ then
     sudo make install
 fi
 
-# enable libmecab
-if [ ! `cat /etc/ld.so.conf | grep ${MECAB_AT}'/lib'` ]
+# install JUMAN++
+if [ ! -e ${JUMAN_AT}/bin/jumanpp ]
 then
-  sudo chmod 777 /etc/ld.so.conf
-  echo ${MECAB_AT}'/lib' >> /etc/ld.so.conf
-  sudo chmod 644 /etc/ld.so.conf
-  sudo ldconfig
+    cd ${SRC_TO}
+    sudo curl -O http://lotus.kuee.kyoto-u.ac.jp/nl-resource/jumanpp/jumanpp-1.01.tar.xz
+    sudo tar xJvf jumanpp-1.01.tar.xz
+    cd jumanpp-1.01/
+    sudo ./configure --prefix=${JUMAN_AT}
+    sudo make
+    sudo make install
 fi
 
-# enable mecab
-if [ ! `echo  $PATH | grep ${MECAB_AT}'/bin'` ]
+# install JUMAN
+if [ ! -e ${JUMAN_AT}/bin/juman ]
 then
-  echo 'export PATH=$PATH:'${MECAB_AT}'/bin' >> ~/.bash_profile
-  source ~/.bash_profile
+    cd ${SRC_TO}
+    sudo curl -O http://nlp.ist.i.kyoto-u.ac.jp/nl-resource/juman/juman-7.01.tar.bz2
+    sudo tar jxvf juman-7.01.tar.bz2
+    cd juman-7.01
+    sudo ./configure --prefix=${JUMAN_AT}
+    sudo make
+    sudo make install
+fi
+
+# install KNP
+if [ ! -e ${JUMAN_AT}/bin/knp ]
+then
+    cd ${SRC_TO}
+    sudo wget http://nlp.ist.i.kyoto-u.ac.jp/nl-resource/knp/knp-4.17.tar.bz2
+    sudo tar jxvf knp-4.17.tar.bz2
+    cd knp-4.17
+    sudo ./configure --prefix=${JUMAN_AT}
+    sudo make
+    sudo make install
 fi
 
 # install mecab-python
-${PIP2_AT}/bin/pip${PYTHON2} install --user mecab-python
-${PIP3_AT}/bin/pip${PYTHON3} install --user mecab-python3
+sudo ${PIP_AT}/bin/pip${PYTHON2} install mecab-python
+sudo ${PIP_AT}/bin/pip${PYTHON3} install mecab-python3
 
 # install beautifulsoup
-${PIP2_AT}/bin/pip${PYTHON2} install --user beautifulsoup4
-${PIP3_AT}/bin/pip${PYTHON3} install --user beautifulsoup4
+sudo ${PIP_AT}/bin/pip${PYTHON2} install beautifulsoup4
+sudo ${PIP_AT}/bin/pip${PYTHON3} install beautifulsoup4
 
 # install scikit-learn
-${PIP2_AT}/bin/pip${PYTHON2} install --user scikit-learn
-${PIP3_AT}/bin/pip${PYTHON3} install --user scikit-learn
+sudo ${PIP_AT}/bin/pip${PYTHON2} install scikit-learn
+sudo ${PIP_AT}/bin/pip${PYTHON3} install scikit-learn
 
 # install matplotlib
-${PIP2_AT}/bin/pip${PYTHON2} install --user matplotlib
-${PIP3_AT}/bin/pip${PYTHON3} install --user matplotlib
+sudo ${PIP_AT}/bin/pip${PYTHON2} install matplotlib
+sudo ${PIP_AT}/bin/pip${PYTHON3} install matplotlib
 
 # install scipy
-${PIP2_AT}/bin/pip${PYTHON2} install --user scipy
-${PIP3_AT}/bin/pip${PYTHON3} install --user scipy
+sudo ${PIP_AT}/bin/pip${PYTHON2} install scipy
+sudo ${PIP_AT}/bin/pip${PYTHON3} install scipy
 
 # install sphinx
-${PIP2_AT}/bin/pip${PYTHON2} install --user sphinx
-${PIP3_AT}/bin/pip${PYTHON3} install --user sphinx
+sudo ${PIP_AT}/bin/pip${PYTHON2} install sphinx
+sudo ${PIP_AT}/bin/pip${PYTHON3} install sphinx
 
 # install pydot
-${PIP2_AT}/bin/pip${PYTHON2} install --user pydot
-${PIP3_AT}/bin/pip${PYTHON3} install --user pydot
+sudo ${PIP_AT}/bin/pip${PYTHON2} install pydot
+sudo ${PIP_AT}/bin/pip${PYTHON3} install pydot
 
 # install gensim
-${PIP2_AT}/bin/pip${PYTHON2} install --user --upgrade gensim
-${PIP3_AT}/bin/pip${PYTHON3} install --user --upgrade gensim
+sudo ${PIP_AT}/bin/pip${PYTHON2} install --upgrade gensim
+sudo ${PIP_AT}/bin/pip${PYTHON3} install --upgrade gensim
+
+# install PyKNP
+if [ ! -e ${SRC_TO}/pyknp-0.3 ]
+then
+    cd ${SRC_TO}
+    sudo wget http://nlp.ist.i.kyoto-u.ac.jp/nl-resource/knp/pyknp-0.3.tar.gz
+    sudo tar xvf pyknp-0.3.tar.gz
+    cd pyknp-0.3
+    sudo ${PYTHON_AT}/bin/python${PYTHON2} setup.py install
+    sudo ${PYTHON_AT}/bin/python${PYTHON3} setup.py install
+fi
 
 # install ruby & wp2txt
 if [ ! -e ~/.rbenv ]
