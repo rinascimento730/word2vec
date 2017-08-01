@@ -15,19 +15,19 @@ PIP_AT="/opt/local"
 MECAB_AT="/opt/local"
 JUMAN_AT="/opt/local"
 
-
 # yum upgrade
 sudo yum -y upgrade
 
-# install git
-sudo yum -y install git
-
 # install dev tools
 sudo yum -y groupinstall "Development tools"
-sudo yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel scl-utils
+sudo yum -y install git zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel scl-utils
 
 # install boost-devel
-sudo yum -y install http://repo.enetres.net/x86_64/boost-devel-1.59.0-1.x86_64.rpm
+if [ ! -e /etc/yum.repos.d/enetres.repo ]
+then
+    sudo wget http://repo.enetres.net/enetres.repo -O /etc/yum.repos.d/enetres.repo
+    sudo yum -y localinstall http://repo.enetres.net/x86_64/boost-devel-1.59.0-1.x86_64.rpm
+fi
 
 # add Devtoolset-3 Repo
 if [ ! -e /etc/yum.repos.d/rhscl-devtoolset-3-epel-6.repo ]
@@ -40,6 +40,11 @@ then
     #scl enable devtoolset-3 bash
     echo 'source /opt/rh/devtoolset-3/enable' >> ~/.bash_profile
 fi
+
+# install MySQL
+sudo yum -y install http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+sudo yum -y install mysql mysql-devel mysql-server mysql-utilities
+sudo chkconfig mysqld on
 
 # install python 2
 if [ ! -e ${PYTHON_AT}/bin/python${PYTHON2} ]
